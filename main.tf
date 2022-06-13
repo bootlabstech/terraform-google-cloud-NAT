@@ -9,7 +9,7 @@ resource "google_compute_router" "router" {
   }
 }
 
-resource "google_compute_address" "address" {
+resource "google_compute_address" "nat" {
   project = var.project_id
   count   = var.google_compute_address_count
   name    = "nat-manual-ip-${count.index}"
@@ -30,13 +30,25 @@ resource "google_compute_router_nat" "nat" {
     enable = var.log_config_enable
     filter = var.filter
   }
-  dynamic "subnetwork" {
-    for_each = var.subnetwork
-    content {
-      name                     = subnetwork.value.name
-      secondary_ip_range_names = subnetwork.value.secondary_ip_range_names
-      source_ip_ranges_to_nat  = subnetwork.value.source_ip_ranges_to_nat
 
+  dynamic "subnetwork" {
+    for_each = var.enable_subnetwork ? [{}] : []
+    content {
+      name                     = var.subnetwork_name
+      secondary_ip_range_names = var.secondary_ip_range_names
+      source_ip_ranges_to_nat  = var.source_ip_ranges_to_nat
     }
   }
 }
+
+resource "google_compute_route" "route" {
+  name             = var.route_name
+  project          = var.project_id
+  dest_range       = var.dest_range
+  network          = var.network
+  next_hop_gateway = var.next_hop_gateway
+  priority         = var.priority
+}
+
+
+

@@ -53,16 +53,53 @@ variable "filter" {
   description = "Specifies the desired filtering of logs on this NAT. Possible values are ERRORS_ONLY, TRANSLATIONS_ONLY, and ALL."
 }
 
-variable "subnetwork" {
-  type = list(object({
-    name                     = string
-    secondary_ip_range_names = set(string)
-    source_ip_ranges_to_nat  = set(string)
-  }))
-  description = "Self-link of subnetwork to NAT"
-}
-
 variable "google_compute_address_count" {
   type        = number
   description = "The count of compute address should be created"
+}
+
+variable "enable_subnetwork" {
+  type        = bool
+  description = "enable the subnetwork"
+  default     = false
+}
+
+variable "subnetwork_name" {
+  type        = string
+  description = "Self-link of subnetwork to NAT"
+  default     = ""
+}
+
+variable "secondary_ip_range_names" {
+  type        = set(string)
+  description = "List of the secondary ranges of the subnetwork that are allowed to use NAT."
+  default     = []
+}
+
+variable "source_ip_ranges_to_nat" {
+  type        = set(string)
+  description = "List of options for which source IPs in the subnetwork should have NAT enabled"
+  default     = []
+}
+
+variable "route_name" {
+  type        = string
+  description = "Name of the route resource."
+}
+
+variable "dest_range" {
+  type        = string
+  description = "The destination range of outgoing packets that this route applies to. Only IPv4 is supported."
+}
+
+variable "next_hop_gateway" {
+  type        = string
+  description = "URL to a gateway that should handle matching packets."
+  default     = "default-internet-gateway"
+}
+
+variable "priority" {
+  type        = number
+  description = "The priority of this route."
+  default     = 0
 }
